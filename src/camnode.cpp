@@ -518,9 +518,8 @@ static void NewBuffer_callback (ArvStream *pStream, ApplicationData *pApplicatio
         if (arv_buffer_get_status(pBuffer) == ARV_BUFFER_STATUS_SUCCESS) 
         {
 			sensor_msgs::Image msg;
-			
-        	pApplicationdata->nBuffers++;
-            size_t currSize = arv_buffer_get_image_width(pBuffer) * arv_buffer_get_image_height(pBuffer) * global.nBytesPixel;
+			pApplicationdata->nBuffers++;
+      size_t currSize = arv_buffer_get_image_width(pBuffer) * arv_buffer_get_image_height(pBuffer) * global.nBytesPixel;
 			std::vector<uint8_t> this_data(currSize);
 			memcpy(&this_data[0], arv_buffer_get_data(pBuffer, &currSize), currSize);
 
