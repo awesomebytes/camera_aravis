@@ -4,8 +4,7 @@ left:
   PixelFormat: Mono16
   DigitalOutput: 3 
   GrbCh0TrigCfgFrameToSkip: 0
-  SensorGainMode: 1  ### 1:lowGain 2:highGain
-  Gain: 1
+  SensorGainMode: 2  ### 1:lowGain 2:highGain
   GevSCPSPacketSize: 1500
 
 right:
@@ -13,5 +12,4 @@ right:
   DigitalOutput: 3 
   GrbCh0TrigCfgFrameToSkip: 0
   SensorGainMode: 2  ### 1:lowGain 2:highGain
-  Gain: 2
   GevSCPSPacketSize: 1500
