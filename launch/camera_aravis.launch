@@ -9,5 +9,5 @@
   <node ns="FLIR" pkg="camera_aravis" type="camnode" name="right" output="screen" args="Max">
   </node>
 
-	<rosparam file="$(find camera_aravis)/config/configuration.yaml" command="load"/> 
+	<rosparam ns="FLIR" file="$(find camera_aravis)/config/configuration.yaml" command="load"/> 
 </launch>
