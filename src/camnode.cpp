@@ -44,6 +44,8 @@
 
 #include "XmlRpc.h"
 
+#include <flir_camera/FireNUC.h>
+
 //#define TUNING	// Allows tuning the gains for the timestamp controller.  Publishes output on topic /dt, and receives gains on params /kp, /ki, /kd
 
 
@@ -579,12 +581,23 @@ static void NewBuffer_callback (ArvStream *pStream, ApplicationData *pApplicatio
         }
         else
         	ROS_WARN ("Frame error: %s", szBufferStatusFromInt[arv_buffer_get_status(pBuffer)]);
-        	
-        arv_stream_push_buffer (pStream, pBuffer);
+	 
+	 			arv_stream_push_buffer (pStream, pBuffer);
         iFrame++;
     }
 } // NewBuffer_callback()
 
+/**
+ * This callback us used to use a service call to manually run an NUC.
+ */
+bool NUCService_callback (flir_camera::FireNUC::Request &req, flir_camera::FireNUC::Response &res)
+{
+ 	if (req.Trigger)
+ 	{
+ 		arv_device_execute_command(global.pDevice, "NUCAction");
+ 	}
+ 	return true;
+}
 
 static void ControlLost_callback (ArvGvDevice *pGvDevice)
 {
@@ -830,9 +843,6 @@ int main(int argc, char** argv)
     ArvGcNode	*pGcNode;
 	GError		*error=NULL;
 
-
-    
-    
     global.bCancel = FALSE;
     global.config = global.config.__getDefault__();
     global.idSoftwareTriggerTimer = 0;
@@ -840,6 +850,11 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "camera");
     global.phNode = new ros::NodeHandle();
 
+
+		// Service callback for firing nuc's. 
+	  // Needed since we cannot open another connection to cameras while streaming.
+		ros::NodeHandle nh;
+		ros::ServiceServer NUCservice = nh.advertiseService("FireNUC", NUCService_callback);
 
     //g_type_init ();
 
