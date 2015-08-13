@@ -44,7 +44,7 @@
 
 #include "XmlRpc.h"
 
-#include <flir_camera/FireNUC.h>
+#include <stereo_ir_2_0/FireNUC.h>
 
 //#define TUNING	// Allows tuning the gains for the timestamp controller.  Publishes output on topic /dt, and receives gains on params /kp, /ki, /kd
 
@@ -590,7 +590,7 @@ static void NewBuffer_callback (ArvStream *pStream, ApplicationData *pApplicatio
 /**
  * This callback us used to use a service call to manually run an NUC.
  */
-bool NUCService_callback (flir_camera::FireNUC::Request &req, flir_camera::FireNUC::Response &res)
+bool NUCService_callback (stereo_ir_2_0::FireNUC::Request &req, stereo_ir_2_0::FireNUC::Response &res)
 {
  	if (req.Trigger)
  	{
