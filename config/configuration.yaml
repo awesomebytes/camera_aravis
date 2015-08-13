@@ -6,6 +6,7 @@ left:
   GrbCh0TrigCfgFrameToSkip: 0
   SensorGainMode: 2  ### 1:lowGain 2:highGain
   GevSCPSPacketSize: 1500
+  frame_id: leftFlir
 
 right:
   PixelFormat: Mono16
@@ -13,3 +14,4 @@ right:
   GrbCh0TrigCfgFrameToSkip: 0
   SensorGainMode: 2  ### 1:lowGain 2:highGain
   GevSCPSPacketSize: 1500
+  frame_id: rightFlir
