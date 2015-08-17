@@ -588,7 +588,7 @@ static void NewBuffer_callback (ArvStream *pStream, ApplicationData *pApplicatio
 } // NewBuffer_callback()
 
 /**
- * This callback us used to use a service call to manually run an NUC.
+ * This callback is called from a ROS service call to manually run an NUC.
  */
 bool NUCService_callback (stereo_ir_2_0::FireNUC::Request &req, stereo_ir_2_0::FireNUC::Response &res)
 {
