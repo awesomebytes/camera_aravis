@@ -31,6 +31,7 @@
 #include <ros/ros.h>
 #include <ros/time.h>
 #include <ros/duration.h>
+#include <ros/package.h>
 #include <sensor_msgs/Image.h>
 #include <std_msgs/Int64.h>
 #include <sensor_msgs/image_encodings.h>
@@ -1017,8 +1018,15 @@ int main(int argc, char** argv)
 		global.ppubInt64 = &pubInt64;
 #endif
     	
+    // Grab the calibration file url from the param server if exists
+    std::string calibrationURL = ""; // Default looks in .ros/camera_info
+		if (!(ros::param::get(std::string("calibrationURL").append(arv_device_get_string_feature_value (global.pDevice, "DeviceID")), calibrationURL)))
+		{
+			ROS_ERROR("ERROR: Could not read calibrationURL from parameter server");
+		}
+
 		// Start the camerainfo manager.
-		global.pCameraInfoManager = new camera_info_manager::CameraInfoManager(ros::NodeHandle(ros::this_node::getName()), arv_device_get_string_feature_value (global.pDevice, "DeviceID"));
+		global.pCameraInfoManager = new camera_info_manager::CameraInfoManager(ros::NodeHandle(ros::this_node::getName()), arv_device_get_string_feature_value (global.pDevice, "DeviceID"), calibrationURL);
 
 		// Start the dynamic_reconfigure server.
 		dynamic_reconfigure::Server<Config> 				reconfigureServer;
