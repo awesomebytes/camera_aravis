@@ -851,10 +851,10 @@ int main(int argc, char** argv)
     global.phNode = new ros::NodeHandle();
 
 
-		// Service callback for firing nuc's. 
-	  // Needed since we cannot open another connection to cameras while streaming.
-		ros::NodeHandle nh;
-		ros::ServiceServer NUCservice = nh.advertiseService("FireNUC", NUCService_callback);
+    // Service callback for firing nuc's. 
+	// Needed since we cannot open another connection to cameras while streaming.
+	ros::NodeHandle nh;
+	ros::ServiceServer NUCservice = nh.advertiseService("FireNUC", NUCService_callback);
 
     //g_type_init ();
 
