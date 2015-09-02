@@ -6,7 +6,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp sensor_msgs image_transport camer
 find_package(Aravis REQUIRED)
 find_package(GLIB2 REQUIRED)
 
-generate_dynamic_reconfigure_options(cfg/CameraAravisConfig.cfg)
+generate_dynamic_reconfigure_options(cfg/CameraAravis.cfg)
 catkin_package(
     DEPENDS Aravis GLIB2
     CATKIN_DEPENDS roscpp sensor_msgs image_transport camera_info_manager dynamic_reconfigure driver_base tf

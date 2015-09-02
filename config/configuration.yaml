@@ -1,0 +1,17 @@
+# FLIR Camera Configuration
+
+left:
+  PixelFormat: Mono16
+  DigitalOutput: 3 
+  GrbCh0TrigCfgFrameToSkip: 0
+  SensorGainMode: 2  ### 1:lowGain 2:highGain
+  GevSCPSPacketSize: 1500
+  frame_id: leftFlir
+
+right:
+  PixelFormat: Mono16
+  DigitalOutput: 3 
+  GrbCh0TrigCfgFrameToSkip: 0
+  SensorGainMode: 2  ### 1:lowGain 2:highGain
+  GevSCPSPacketSize: 1500
+  frame_id: rightFlir

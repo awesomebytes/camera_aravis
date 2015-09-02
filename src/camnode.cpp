@@ -31,6 +31,7 @@
 #include <ros/ros.h>
 #include <ros/time.h>
 #include <ros/duration.h>
+#include <ros/package.h>
 #include <sensor_msgs/Image.h>
 #include <std_msgs/Int64.h>
 #include <sensor_msgs/image_encodings.h>
@@ -43,6 +44,8 @@
 #include <camera_aravis/CameraAravisConfig.h>
 
 #include "XmlRpc.h"
+
+#include <stereo_ir_2_0/FireNUC.h>
 
 //#define TUNING	// Allows tuning the gains for the timestamp controller.  Publishes output on topic /dt, and receives gains on params /kp, /ki, /kd
 
@@ -515,17 +518,17 @@ static void NewBuffer_callback (ArvStream *pStream, ApplicationData *pApplicatio
     pBuffer = arv_stream_try_pop_buffer (pStream);
     if (pBuffer != NULL) 
     {
-        if (pBuffer->status == ARV_BUFFER_STATUS_SUCCESS) 
+        if (arv_buffer_get_status(pBuffer) == ARV_BUFFER_STATUS_SUCCESS) 
         {
 			sensor_msgs::Image msg;
-			
-        	pApplicationdata->nBuffers++;
-			std::vector<uint8_t> this_data(pBuffer->size);
-			memcpy(&this_data[0], pBuffer->data, pBuffer->size);
+			pApplicationdata->nBuffers++;
+      size_t currSize = arv_buffer_get_image_width(pBuffer) * arv_buffer_get_image_height(pBuffer) * global.nBytesPixel;
+			std::vector<uint8_t> this_data(currSize);
+			memcpy(&this_data[0], arv_buffer_get_data(pBuffer, &currSize), currSize);
 
 
 			// Camera/ROS Timestamp coordination.
-			cn				= (uint64_t)pBuffer->timestamp_ns;				// Camera now
+			cn				= (uint64_t)arv_buffer_get_timestamp(pBuffer);				// Camera now
 			rn	 			= ros::Time::now().toNSec();					// ROS now
 			
 			if (iFrame < 10)
@@ -558,7 +561,7 @@ static void NewBuffer_callback (ArvStream *pStream, ApplicationData *pApplicatio
 			
 			// Construct the image message.
 			msg.header.stamp.fromNSec(tn);
-			msg.header.seq = pBuffer->frame_id;
+			msg.header.seq = arv_buffer_get_frame_id(pBuffer);
 			msg.header.frame_id = global.config.frame_id;
 			msg.width = global.widthRoi;
 			msg.height = global.heightRoi;
@@ -578,13 +581,24 @@ static void NewBuffer_callback (ArvStream *pStream, ApplicationData *pApplicatio
 				
         }
         else
-        	ROS_WARN ("Frame error: %s", szBufferStatusFromInt[pBuffer->status]);
-        	
-        arv_stream_push_buffer (pStream, pBuffer);
+        	ROS_WARN ("Frame error: %s", szBufferStatusFromInt[arv_buffer_get_status(pBuffer)]);
+	 
+	 			arv_stream_push_buffer (pStream, pBuffer);
         iFrame++;
     }
 } // NewBuffer_callback()
 
+/**
+ * This callback is called from a ROS service call to manually run an NUC.
+ */
+bool NUCService_callback (stereo_ir_2_0::FireNUC::Request &req, stereo_ir_2_0::FireNUC::Response &res)
+{
+ 	if (req.Trigger)
+ 	{
+ 		arv_device_execute_command(global.pDevice, "NUCAction");
+ 	}
+ 	return true;
+}
 
 static void ControlLost_callback (ArvGvDevice *pGvDevice)
 {
@@ -830,9 +844,6 @@ int main(int argc, char** argv)
     ArvGcNode	*pGcNode;
 	GError		*error=NULL;
 
-
-    
-    
     global.bCancel = FALSE;
     global.config = global.config.__getDefault__();
     global.idSoftwareTriggerTimer = 0;
@@ -840,6 +851,11 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "camera");
     global.phNode = new ros::NodeHandle();
 
+
+    // Service callback for firing nuc's. 
+	// Needed since we cannot open another connection to cameras while streaming.
+	ros::NodeHandle nh;
+	ros::ServiceServer NUCservice = nh.advertiseService("FireNUC", NUCService_callback);
 
     //g_type_init ();
 
@@ -1002,8 +1018,15 @@ int main(int argc, char** argv)
 		global.ppubInt64 = &pubInt64;
 #endif
     	
+    // Grab the calibration file url from the param server if exists
+    std::string calibrationURL = ""; // Default looks in .ros/camera_info
+		if (!(ros::param::get(std::string("calibrationURL").append(arv_device_get_string_feature_value (global.pDevice, "DeviceID")), calibrationURL)))
+		{
+			ROS_ERROR("ERROR: Could not read calibrationURL from parameter server");
+		}
+
 		// Start the camerainfo manager.
-		global.pCameraInfoManager = new camera_info_manager::CameraInfoManager(ros::NodeHandle(ros::this_node::getName()), arv_device_get_string_feature_value (global.pDevice, "DeviceID"));
+		global.pCameraInfoManager = new camera_info_manager::CameraInfoManager(ros::NodeHandle(ros::this_node::getName()), arv_device_get_string_feature_value (global.pDevice, "DeviceID"), calibrationURL);
 
 		// Start the dynamic_reconfigure server.
 		dynamic_reconfigure::Server<Config> 				reconfigureServer;
