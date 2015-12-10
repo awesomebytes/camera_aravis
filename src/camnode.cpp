@@ -45,7 +45,7 @@
 
 #include "XmlRpc.h"
 
-#include <stereo_ir_2_0/FireNUC.h>
+//#include <stereo_ir_2_0/FireNUC.h>
 
 //#define TUNING	// Allows tuning the gains for the timestamp controller.  Publishes output on topic /dt, and receives gains on params /kp, /ki, /kd
 
@@ -591,14 +591,14 @@ static void NewBuffer_callback (ArvStream *pStream, ApplicationData *pApplicatio
 /**
  * This callback is called from a ROS service call to manually run an NUC.
  */
-bool NUCService_callback (stereo_ir_2_0::FireNUC::Request &req, stereo_ir_2_0::FireNUC::Response &res)
-{
- 	if (req.Trigger)
- 	{
- 		arv_device_execute_command(global.pDevice, "NUCAction");
- 	}
- 	return true;
-}
+// bool NUCService_callback (stereo_ir_2_0::FireNUC::Request &req, stereo_ir_2_0::FireNUC::Response &res)
+// {
+//  	if (req.Trigger)
+//  	{
+//  		arv_device_execute_command(global.pDevice, "NUCAction");
+//  	}
+//  	return true;
+// }
 
 static void ControlLost_callback (ArvGvDevice *pGvDevice)
 {
@@ -855,7 +855,7 @@ int main(int argc, char** argv)
     // Service callback for firing nuc's. 
 	// Needed since we cannot open another connection to cameras while streaming.
 	ros::NodeHandle nh;
-	ros::ServiceServer NUCservice = nh.advertiseService("FireNUC", NUCService_callback);
+	// ros::ServiceServer NUCservice = nh.advertiseService("FireNUC", NUCService_callback);
 
     //g_type_init ();
 
@@ -1084,8 +1084,8 @@ int main(int argc, char** argv)
 
 		ROS_INFO ("    Can set FocusPos:      %s", global.isImplementedFocusPos ? "True" : "False");
 
-		if (global.isImplementedMtu)
-			ROS_INFO ("    Network mtu          = %lu", arv_device_get_integer_feature_value(global.pDevice, "GevSCPSPacketSize"));
+		// if (global.isImplementedMtu)
+		// 	ROS_INFO ("    Network mtu          = %l", arv_device_get_integer_feature_value(global.pDevice, "GevSCPSPacketSize"));
 
 		ROS_INFO ("    ---------------------------");
 

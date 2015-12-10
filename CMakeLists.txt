@@ -2,9 +2,16 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(camera_aravis)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
-find_package(catkin REQUIRED COMPONENTS roscpp sensor_msgs image_transport camera_info_manager dynamic_reconfigure driver_base tf dynamic_reconfigure)
+find_package(catkin REQUIRED COMPONENTS roscpp sensor_msgs image_transport camera_info_manager dynamic_reconfigure driver_base tf dynamic_reconfigure
+	  pal_cmake)
+
+pal_package(MODULE vision)
+
+set(Aravis_ROOT_DIR "/opt/aravis")
 find_package(Aravis REQUIRED)
 find_package(GLIB2 REQUIRED)
+
+include(${PAL_CONFIG_DIR}/UseAravis.cmake)
 
 generate_dynamic_reconfigure_options(cfg/CameraAravis.cfg)
 catkin_package(

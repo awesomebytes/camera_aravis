@@ -2,12 +2,12 @@ INCLUDE(FindPackageHandleStandardArgs)
 
 FIND_PATH(ARAVIS_INCLUDE_PATH arv.h
   "$ENV{ARAVIS_INCLUDE_PATH}"
-  /usr/include/aravis-0.4
+  /opt/aravis/include
 )
 
 FIND_LIBRARY(ARAVIS_LIBRARY aravis-0.4
   "$ENV{ARAVIS_LIBRARY}"
-  /usr/lib
+  /opt/aravis/lib/
 )
 
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(ARAVIS DEFAULT_MSG
