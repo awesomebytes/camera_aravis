@@ -861,7 +861,10 @@ int main(int argc, char** argv)
 
     // Print out some useful info.
     ROS_INFO ("Attached cameras:");
+    ROS_INFO("Executing: arv_update_device_list()");
     arv_update_device_list();
+    ROS_INFO("Done with arv_update_device_list()");
+    ROS_INFO("Executing: arv_get_n_interfaces()");
     nInterfaces = arv_get_n_interfaces();
     ROS_INFO ("# Interfaces: %d", nInterfaces);
 
